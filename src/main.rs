@@ -39,6 +39,14 @@ impl AppState {
     }
 }
 
+/// Helper function to convert seconds to HH:MM:SS format.
+fn format_time(total_seconds: u64) -> String {
+    let hours = total_seconds / 3600;
+    let minutes = (total_seconds % 3600) / 60;
+    let seconds = total_seconds % 60;
+    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
+}
+
 /// Builds the UI layout for the application.
 fn build_ui() -> impl Widget<AppState> {
     // Row with a TextBox and an "Add Task" button.
@@ -72,7 +80,8 @@ fn build_ui() -> impl Widget<AppState> {
     let task_list = List::new(|| {
         Flex::row()
             .with_child(Label::new(|task: &Task, _env: &Env| task.name.clone()).fix_width(150.0))
-            .with_child(Label::new(|task: &Task, _env: &Env| format!("{} sec", task.accumulated)).fix_width(80.0))
+            // Display the accumulated time in HH:MM:SS format.
+            .with_child(Label::new(|task: &Task, _env: &Env| format_time(task.accumulated)).fix_width(100.0))
             .with_spacer(10.0)
             .with_child(Button::new("Select").on_click(|ctx, task: &mut Task, _env| {
                 // Submit a command with the task name so that the AppDelegate can update
